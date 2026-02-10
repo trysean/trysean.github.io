@@ -3,265 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Valentine</title>
+    <title>Microsite Récréatif de Saint-Valentin</title>
     <style>
         :root {
-            --primary-pink: #ff4d6d;
-            --soft-white: #f8f9fa;
+            --pink-light: #ffcad4;
+            --pink-medium: #f4acb7;
+            --red-main: #d90429;
+            --white-soft: #f8f9fa;
         }
 
-        body {
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--pink-light);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #ffe5ec;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
         }
 
-        /* --- Phase 1: Enveloppe --- */
-        #animation-container {
+        /* --- Zone de Travail --- */
+        #viewport {
             position: relative;
-            text-align: center;
-            transition: opacity 1s ease-out;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .envelope-wrapper {
+        /* --- Enveloppe Ailée --- */
+       .envelope-container {
             position: relative;
             cursor: pointer;
             animation: float 3s ease-in-out infinite;
+            z-index: 10;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(2deg); }
         }
 
-        .envelope {
-            position: relative;
-            width: 200px;
-            height: 120px;
-            background: white;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            margin: 0 auto;
-        }
-
-        .envelope::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            z-index: 2;
-            border-top: 65px solid #f1f1f1;
-            border-left: 100px solid transparent;
-            border-right: 100px solid transparent;
-            transform-origin: top;
-            transition: transform 0.6s ease;
-        }
-
-        .open.envelope::before {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
-
-        .heart-seal {
-            position: absolute;
-            top: 45px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            color: var(--primary-pink);
-            font-size: 25px;
-            transition: opacity 0.3s;
-        }
-
-        .open .heart-seal { opacity: 0; }
-
-        .letter {
-            position: absolute;
-            bottom: 0;
-            left: 10px;
+       .envelope-svg {
             width: 180px;
-            height: 0;
-            background: #fff;
-            transition: height 1s ease 0.6s, bottom 1s ease 0.6s;
-            overflow: hidden;
-            padding: 0 5px;
-            box-sizing: border-box;
-            text-align: center;
-            font-size: 11px;
-            border: 1px solid #eee;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
         }
 
-        .open .letter {
-            height: 150px;
-            bottom: 60px;
-            padding-top: 10px;
+       .wing {
+            fill: white;
+            animation: flap 0.5s ease-in-out infinite alternate;
+            transform-origin: center;
         }
 
-        /* --- Phase 2: La Question --- */
-        #question-container {
+       .wing-left { transform-origin: right; }
+       .wing-right { transform-origin: left; }
+
+        @keyframes flap {
+            from { transform: rotateY(0deg) skewY(0deg); }
+            to { transform: rotateY(45deg) skewY(-10deg); }
+        }
+
+        /* --- Message Déroulant --- */
+        #scroll-container {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .bunny-gif {
-            width: 200px;
-            height: 200px;
+            width: 320px;
             background: #fff;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            transform-origin: top;
+            animation: unroll 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+            z-index: 5;
         }
 
-        .btn-group {
+        @keyframes unroll {
+            from { transform: scaleY(0); opacity: 0; }
+            to { transform: scaleY(1); opacity: 1; }
+        }
+
+       .message-content {
+            font-size: 1.2rem;
+            color: var(--red-main);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* --- Boutons et Logique --- */
+        #button-area {
+            display: none; /* Révélé après 10s */
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+       .btn-wrapper {
             display: flex;
             gap: 20px;
+            justify-content: center;
             align-items: center;
-            margin-top: 20px;
-            min-height: 100px;
         }
 
         button {
             padding: 12px 25px;
             border: none;
             border-radius: 25px;
-            cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s ease;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        #yes-btn { background-color: #4caf50; color: white; }
-        #no-btn { background-color: var(--primary-pink); color: white; }
+        #btn-yes {
+            background-color: var(--red-main);
+            color: white;
+            font-size: 1rem;
+        }
 
-        canvas {
+        #btn-no {
+            background-color: #eee;
+            color: #555;
+        }
+
+        /* --- Canvas Finale --- */
+        #fireworks-canvas {
             position: fixed;
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 999;
+            z-index: 100;
         }
+
+       .hidden { display: none!important; }
     </style>
 </head>
 <body>
 
-    <div id="animation-container">
-        <div class="envelope-wrapper" onclick="openEnvelope()">
-            <div class="envelope" id="envelope">
-                <div class="heart-seal">❤️</div>
-                <div class="letter" id="letter-text">
-                    <strong>My love❤️</strong><br><br>
-                    I know I'm not the best😜<br>
-                    but I'm going to fight my whole life<br>
-                    trying to treat you better than anyone else. Because..<br><br>
-                    I just don't want to lose you I love you
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div id="viewport">
+        <div id="envelope-stage" class="envelope-container">
+            <svg class="envelope-svg" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <path class="wing wing-left" d="M40,70 Q0,20 10,80 T40,70" />
+                <path class="wing wing-right" d="M160,70 Q200,20 190,80 T160,70" />
+                <rect x="50" y="50" width="100" height="70" fill="white" rx="2" />
+                <path d="M50,50 L100,90 L150,50" fill="none" stroke="#f4acb7" stroke-width="2" />
+                <path d="M100,95 Q90,85 85,95 T100,110 T115,95 Q110,85 100,95" fill="#d90429" />
+            </svg>
+        </div>
+
+        <div id="scroll-container">
+            <div class="message-content">
+                Ma très chère Valentine,<br><br>
+                Chaque battement de mon cœur est une note dans la symphonie de notre amour. Depuis que nos chemins se sont croisés, le monde est plus lumineux.<br><br>
+                Je voulais te demander quelque chose d'important...
+            </div>
+            
+            <div id="button-area">
+                <div class="btn-wrapper">
+                    <button id="btn-yes">OUI!</button>
+                    <button id="btn-no">Non</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="question-container">
-        <div class="bunny-gif">
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHYxcXN2am9pZzRreXJ6eXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1z/L95W4wv8nnb93xThTd/giphy.gif" width="150" alt="Bunny">
-        </div>
-        <h2>Acceptes-tu d'être ma Valentine?</h2>
-        <div class="btn-group">
-            <button id="yes-btn">Oui</button>
-            <button id="no-btn">Non</button>
-        </div>
-    </div>
-
-    <canvas id="fireworksCanvas"></canvas>
-
     <script>
-        let noCount = 0;
-        const noTexts = [
-            "Es-tu sûr?",
-            "Vraiment sûr?",
-            "Réfléchis encore un peu!",
-            "Tu t'es trompé de bouton!",
-            "Euh!!"
-        ];
+        const envelope = document.getElementById('envelope-stage');
+        const scroll = document.getElementById('scroll-container');
+        const buttonArea = document.getElementById('button-area');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
 
-        function openEnvelope() {
-            const env = document.getElementById('envelope');
-            env.classList.add('open');
+        let iteration = 0;
+        const noMessages =;
 
-            // Transition vers la question après 10s d'affichage du texte
+        // 1. Déclenchement au clic sur l'enveloppe
+        envelope.addEventListener('click', () => {
+            envelope.classList.add('hidden');
+            scroll.style.display = 'block';
+
+            // 2. Transition de 10 secondes avant l'apparition des boutons
             setTimeout(() => {
-                document.getElementById('animation-container').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('animation-container').style.display = 'none';
-                    document.getElementById('question-container').style.display = 'flex';
-                }, 1000);
-            }, 10000);
-        }
+                buttonArea.style.display = 'block';
+                setTimeout(() => { buttonArea.style.opacity = '1'; }, 50);
+            }, 10000); 
+        });
 
-        const yesBtn = document.getElementById('yes-btn');
-        const noBtn = document.getElementById('no-btn');
-
-        noBtn.addEventListener('click', () => {
-            if (noCount < 5) {
-                // Augmentation du bouton OUI
-                let currentScale = 1 + (noCount + 1) * 1.5;
-                yesBtn.style.transform = `scale(${currentScale})`;
+        // 3. Logique de croissance et changement de texte
+        btnNo.addEventListener('click', () => {
+            if (iteration < 5) {
+                btnNo.innerText = noMessages[iteration];
+                iteration++;
                 
-                // Décalage du bouton NON
-                noBtn.style.transform = `translateX(${(noCount + 1) * 20}px)`;
+                // Croissance du bouton OUI
+                let scaleFactor = 1 + (iteration * 0.7);
+                btnYes.style.transform = `scale(${scaleFactor})`;
                 
-                // Changement de texte
-                noBtn.innerText = noTexts[noCount];
-                
-                noCount++;
+                // Déplacement aléatoire du bouton NON pour le côté "récréatif"
+                let moveX = (Math.random() - 0.5) * 100;
+                let moveY = (Math.random() - 0.5) * 50;
+                btnNo.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 - iteration*0.1})`;
             } else {
-                // Disparition après 5 itérations
-                noBtn.style.display = 'none';
-                yesBtn.style.transform = `scale(10)`;
-                yesBtn.style.zIndex = "10";
+                btnNo.style.display = 'none'; // Disparition finale
             }
         });
 
-        yesBtn.addEventListener('click', () => {
-            document.body.innerHTML = "<h1 style='color: #ff4d6d; text-align:center; margin-top: 20%;'>YAY! ❤️ Bonne Saint-Valentin !</h1><canvas id='fireworksCanvas'></canvas>";
-            startFireworks();
-        });
-
-        // Logique simplifiée des feux d'artifice (Canvas)
-        function startFireworks() {
-            const canvas = document.getElementById('fireworksCanvas');
-            const ctx = canvas.getContext('2d');
+        // 4. Finale : Feux d'artifice
+        btnYes.addEventListener('click', () => {
+            scroll.innerHTML = "<h1 style='color:#d90429'>JE T'AIME! ❤️</h1>";
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            startFireworkShow();
+        });
 
-            function drawHeart(x, y, size, color) {
-                ctx.fillStyle = color;
+        // --- Moteur de Feux d'Artifice ---
+        class Particle {
+            constructor(x, y, vx, vy, color) {
+                this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+                this.alpha = 1; this.color = color;
+                this.gravity = 0.04; this.friction = 0.97;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
                 ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.bezierCurveTo(x, y - 3, x - 5, y - 15, x - 25, y - 15);
-                ctx.bezierCurveTo(x - 55, y - 15, x - 55, y + 22.5, x - 55, y + 22.5);
-                ctx.bezierCurveTo(x - 55, y + 40, x - 35, y + 62, x, y + 80);
-                ctx.bezierCurveTo(x + 35, y + 62, x + 55, y + 40, x + 55, y + 22.5);
-                ctx.bezierCurveTo(x + 55, y + 22.5, x + 55, y - 15, x + 25, y - 15);
-                ctx.bezierCurveTo(x + 10, y - 15, x, y - 3, x, y);
+                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
                 ctx.fill();
             }
-
-            setInterval(() => {
-                ctx.clearRect(0,0, canvas.width, canvas.height);
-                for(let i=0; i<5; i++) {
-                    drawHeart(Math.random()*canvas.width, Math.random()*canvas.height, 1, `hsl(${Math.random()*360}, 100%, 50%)`);
-                }
-            }, 200);
+            update() {
+                this.vx *= this.friction; this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx; this.y += this.vy;
+                this.alpha -= 0.012;
+            }
         }
+
+        let particles =;
+        function spawnHeart(cx, cy) {
+            const hue = Math.random() * 20 + 340; // Nuances de rouge/rose
+            const color = `hsl(${hue}, 100%, 60%)`;
+            for (let i = 0; i < 120; i++) {
+                const t = (i / 120) * Math.PI * 2;
+                // Équations du coeur
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                const speed = Math.random() * 1.5 + 2;
+                particles.push(new Particle(cx, cy, x * speed * 0.35, y * speed * 0.35, color));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        function startFireworkShow() {
+            animate();
+            setInterval(() => {
+                const rx = Math.random() * canvas.width;
+                const ry = Math.random() * (canvas.height * 0.6);
+                spawnHeart(rx, ry);
+            }, 600);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
