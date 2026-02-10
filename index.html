@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Valentine</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-white: #f8f9fa;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffe5ec;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- Phase 1: Enveloppe --- */
+        #animation-container {
+            position: relative;
+            text-align: center;
+            transition: opacity 1s ease-out;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .envelope {
+            position: relative;
+            width: 200px;
+            height: 120px;
+            background: white;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+
+        .envelope::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            border-top: 65px solid #f1f1f1;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+        }
+
+        .open.envelope::before {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            color: var(--primary-pink);
+            font-size: 25px;
+            transition: opacity 0.3s;
+        }
+
+        .open .heart-seal { opacity: 0; }
+
+        .letter {
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            width: 180px;
+            height: 0;
+            background: #fff;
+            transition: height 1s ease 0.6s, bottom 1s ease 0.6s;
+            overflow: hidden;
+            padding: 0 5px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 11px;
+            border: 1px solid #eee;
+        }
+
+        .open .letter {
+            height: 150px;
+            bottom: 60px;
+            padding-top: 10px;
+        }
+
+        /* --- Phase 2: La Question --- */
+        #question-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .bunny-gif {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #yes-btn { background-color: #4caf50; color: white; }
+        #no-btn { background-color: var(--primary-pink); color: white; }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="animation-container">
+        <div class="envelope-wrapper" onclick="openEnvelope()">
+            <div class="envelope" id="envelope">
+                <div class="heart-seal">❤️</div>
+                <div class="letter" id="letter-text">
+                    <strong>My love❤️</strong><br><br>
+                    I know I'm not the best😜<br>
+                    but I'm going to fight my whole life<br>
+                    trying to treat you better than anyone else. Because..<br><br>
+                    I just don't want to lose you I love you
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="question-container">
+        <div class="bunny-gif">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHYxcXN2am9pZzRreXJ6eXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1z/L95W4wv8nnb93xThTd/giphy.gif" width="150" alt="Bunny">
+        </div>
+        <h2>Acceptes-tu d'être ma Valentine?</h2>
+        <div class="btn-group">
+            <button id="yes-btn">Oui</button>
+            <button id="no-btn">Non</button>
+        </div>
+    </div>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        let noCount = 0;
+        const noTexts = [
+            "Es-tu sûr?",
+            "Vraiment sûr?",
+            "Réfléchis encore un peu!",
+            "Tu t'es trompé de bouton!",
+            "Euh!!"
+        ];
+
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            env.classList.add('open');
+
+            // Transition vers la question après 10s d'affichage du texte
+            setTimeout(() => {
+                document.getElementById('animation-container').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('animation-container').style.display = 'none';
+                    document.getElementById('question-container').style.display = 'flex';
+                }, 1000);
+            }, 10000);
+        }
+
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+
+        noBtn.addEventListener('click', () => {
+            if (noCount < 5) {
+                // Augmentation du bouton OUI
+                let currentScale = 1 + (noCount + 1) * 1.5;
+                yesBtn.style.transform = `scale(${currentScale})`;
+                
+                // Décalage du bouton NON
+                noBtn.style.transform = `translateX(${(noCount + 1) * 20}px)`;
+                
+                // Changement de texte
+                noBtn.innerText = noTexts[noCount];
+                
+                noCount++;
+            } else {
+                // Disparition après 5 itérations
+                noBtn.style.display = 'none';
+                yesBtn.style.transform = `scale(10)`;
+                yesBtn.style.zIndex = "10";
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            document.body.innerHTML = "<h1 style='color: #ff4d6d; text-align:center; margin-top: 20%;'>YAY! ❤️ Bonne Saint-Valentin !</h1><canvas id='fireworksCanvas'></canvas>";
+            startFireworks();
+        });
+
+        // Logique simplifiée des feux d'artifice (Canvas)
+        function startFireworks() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            function drawHeart(x, y, size, color) {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.bezierCurveTo(x, y - 3, x - 5, y - 15, x - 25, y - 15);
+                ctx.bezierCurveTo(x - 55, y - 15, x - 55, y + 22.5, x - 55, y + 22.5);
+                ctx.bezierCurveTo(x - 55, y + 40, x - 35, y + 62, x, y + 80);
+                ctx.bezierCurveTo(x + 35, y + 62, x + 55, y + 40, x + 55, y + 22.5);
+                ctx.bezierCurveTo(x + 55, y + 22.5, x + 55, y - 15, x + 25, y - 15);
+                ctx.bezierCurveTo(x + 10, y - 15, x, y - 3, x, y);
+                ctx.fill();
+            }
+
+            setInterval(() => {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                for(let i=0; i<5; i++) {
+                    drawHeart(Math.random()*canvas.width, Math.random()*canvas.height, 1, `hsl(${Math.random()*360}, 100%, 50%)`);
+                }
+            }, 200);
+        }
+    </script>
+</body>
+</html>
