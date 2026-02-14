@@ -3,284 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsite Récréatif de Saint-Valentin</title>
+    <title>Ma Valentine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --pink-light: #ffcad4;
-            --pink-medium: #f4acb7;
-            --red-main: #d90429;
-            --white-soft: #f8f9fa;
+            --primary-color: #ff4d6d;
+            --secondary-color: #ffb3c1;
+            --bg-color: #fff0f3;
+            --text-dark: #590d22;
         }
 
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--pink-light);
-            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-color) 0%, var(--secondary-color) 100%);
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: var(--text-dark);
         }
 
-        /* --- Zone de Travail --- */
-        #viewport {
-            position: relative;
+        #canvas-fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- Enveloppe Ailée --- */
-       .envelope-container {
-            position: relative;
-            cursor: pointer;
-            animation: float 3s ease-in-out infinite;
+            pointer-events: none;
             z-index: 10;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-25px) rotate(2deg); }
-        }
-
-       .envelope-svg {
-            width: 180px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
-        }
-
-       .wing {
-            fill: white;
-            animation: flap 0.5s ease-in-out infinite alternate;
-            transform-origin: center;
-        }
-
-       .wing-left { transform-origin: right; }
-       .wing-right { transform-origin: left; }
-
-        @keyframes flap {
-            from { transform: rotateY(0deg) skewY(0deg); }
-            to { transform: rotateY(45deg) skewY(-10deg); }
-        }
-
-        /* --- Message Déroulant --- */
-        #scroll-container {
-            display: none;
-            width: 320px;
-            background: #fff;
-            padding: 40px;
-            border-radius: 5px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             text-align: center;
-            transform-origin: top;
-            animation: unroll 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            position: relative;
+            max-width: 500px;
+            width: 90%;
             z-index: 5;
+            transition: all 0.5s ease;
         }
 
-        @keyframes unroll {
-            from { transform: scaleY(0); opacity: 0; }
-            to { transform: scaleY(1); opacity: 1; }
+        .poem {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
         }
 
-       .message-content {
-            font-size: 1.2rem;
-            color: var(--red-main);
-            line-height: 1.5;
-            margin-bottom: 20px;
+        .question {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            display: block;
         }
 
-        /* --- Boutons et Logique --- */
-        #button-area {
-            display: none; /* Révélé après 10s */
-            margin-top: 20px;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
-
-       .btn-wrapper {
+        .btn-container {
             display: flex;
-            gap: 20px;
             justify-content: center;
             align-items: center;
+            gap: 20px;
+            min-height: 150px;
+            flex-wrap: wrap;
         }
 
         button {
             padding: 12px 25px;
             border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            font-family: inherit;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Poppins', sans-serif;
         }
 
-        #btn-yes {
-            background-color: var(--red-main);
+        #yes-btn {
+            background-color: #2ecc71;
             color: white;
             font-size: 1rem;
+            order: 1;
         }
 
-        #btn-no {
-            background-color: #eee;
-            color: #555;
+        #no-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            order: 2;
         }
 
-        /* --- Canvas Finale --- */
-        #fireworks-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 100;
+        .hidden {
+            display: none !important;
         }
 
-       .hidden { display: none!important; }
+        .success-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--primary-color);
+            animation: heartBeat 1.5s infinite;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
-    <canvas id="fireworks-canvas"></canvas>
+    <canvas id="canvas-fireworks"></canvas>
 
-    <div id="viewport">
-        <div id="envelope-stage" class="envelope-container">
-            <svg class="envelope-svg" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
-                <path class="wing wing-left" d="M40,70 Q0,20 10,80 T40,70" />
-                <path class="wing wing-right" d="M160,70 Q200,20 190,80 T160,70" />
-                <rect x="50" y="50" width="100" height="70" fill="white" rx="2" />
-                <path d="M50,50 L100,90 L150,50" fill="none" stroke="#f4acb7" stroke-width="2" />
-                <path d="M100,95 Q90,85 85,95 T100,110 T115,95 Q110,85 100,95" fill="#d90429" />
-            </svg>
-        </div>
-
-        <div id="scroll-container">
-            <div class="message-content">
-                Ma très chère Valentine,<br><br>
-                Chaque battement de mon cœur est une note dans la symphonie de notre amour. Depuis que nos chemins se sont croisés, le monde est plus lumineux.<br><br>
-                Je voulais te demander quelque chose d'important...
+    <div class="card" id="main-card">
+        <div id="content-initial">
+            <div class="poem">
+                Dans l'éclat de tes yeux, je vois mon avenir,<br>
+                Un chemin de douceur que je veux parcourir.<br>
+                Chaque instant à tes côtés est un trésor précieux,<br>
+                Un rêve éveillé sous un soleil radieux.<br><br>
+                Mon cœur bat pour toi, au rythme de tes pas,<br>
+                Trouvant son refuge blotti entre tes bras.<br>
+                Pour cette vie et toutes celles qui suivront,<br>
+                C'est ton nom que mes lèvres toujours chériront.
             </div>
             
-            <div id="button-area">
-                <div class="btn-wrapper">
-                    <button id="btn-yes">OUI!</button>
-                    <button id="btn-no">Non</button>
-                </div>
+            <span class="question">Veux-tu être ma valentine ?</span>
+
+            <div class="btn-container">
+                <button id="yes-btn">Yes</button>
+                <button id="no-btn">No</button>
             </div>
+        </div>
+
+        <div id="content-success" class="hidden">
+            <div class="success-msg">OUI ! ❤️</div>
+            <p>Je savais que tu dirais oui !</p>
         </div>
     </div>
 
     <script>
-        const envelope = document.getElementById('envelope-stage');
-        const scroll = document.getElementById('scroll-container');
-        const buttonArea = document.getElementById('button-area');
-        const btnYes = document.getElementById('btn-yes');
-        const btnNo = document.getElementById('btn-no');
-        const canvas = document.getElementById('fireworks-canvas');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const mainCard = document.getElementById('main-card');
+        const initialContent = document.getElementById('content-initial');
+        const successContent = document.getElementById('content-success');
+        const canvas = document.getElementById('canvas-fireworks');
         const ctx = canvas.getContext('2d');
 
         let iteration = 0;
-        const noMessages =;
+        const noTexts = [
+            "Tu es sûre ?",
+            "Vraiment sûr ?",
+            "Réfléchis encore !",
+            "Hummmm !",
+            "Dernière chance ?"
+        ];
 
-        // 1. Déclenchement au clic sur l'enveloppe
-        envelope.addEventListener('click', () => {
-            envelope.classList.add('hidden');
-            scroll.style.display = 'block';
+        // --- Logique des boutons ---
 
-            // 2. Transition de 10 secondes avant l'apparition des boutons
-            setTimeout(() => {
-                buttonArea.style.display = 'block';
-                setTimeout(() => { buttonArea.style.opacity = '1'; }, 50);
-            }, 10000); 
-        });
-
-        // 3. Logique de croissance et changement de texte
-        btnNo.addEventListener('click', () => {
+        noBtn.addEventListener('click', () => {
             if (iteration < 5) {
-                btnNo.innerText = noMessages[iteration];
+                // Grandir le bouton Yes
+                const yesScale = 1 + (iteration + 1) * 0.8;
+                yesBtn.style.transform = `scale(${yesScale})`;
+                
+                // Rétrécir et déplacer le bouton No
+                const noScale = 1 - (iteration + 1) * 0.15;
+                const xMove = (Math.random() - 0.5) * 200; // Mouvement aléatoire
+                const yMove = (Math.random() - 0.5) * 100;
+                
+                noBtn.style.transform = `scale(${noScale}) translate(${xMove}px, ${yMove}px)`;
+                noBtn.style.opacity = 1 - (iteration * 0.2);
+                noBtn.innerText = noTexts[iteration];
+
                 iteration++;
-                
-                // Croissance du bouton OUI
-                let scaleFactor = 1 + (iteration * 0.7);
-                btnYes.style.transform = `scale(${scaleFactor})`;
-                
-                // Déplacement aléatoire du bouton NON pour le côté "récréatif"
-                let moveX = (Math.random() - 0.5) * 100;
-                let moveY = (Math.random() - 0.5) * 50;
-                btnNo.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 - iteration*0.1})`;
-            } else {
-                btnNo.style.display = 'none'; // Disparition finale
+            }
+
+            if (iteration === 5) {
+                noBtn.classList.add('hidden');
+                yesBtn.style.width = "100%";
+                yesBtn.style.transform = "scale(1.5)";
             }
         });
 
-        // 4. Finale : Feux d'artifice
-        btnYes.addEventListener('click', () => {
-            scroll.innerHTML = "<h1 style='color:#d90429'>JE T'AIME! ❤️</h1>";
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            startFireworkShow();
+        yesBtn.addEventListener('click', () => {
+            initialContent.classList.add('hidden');
+            successContent.classList.remove('hidden');
+            startFireworks();
         });
 
-        // --- Moteur de Feux d'Artifice ---
+        // --- Système de Feux d'artifice (Cœurs et Fleurs) ---
+
+        let particles = [];
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
         class Particle {
-            constructor(x, y, vx, vy, color) {
-                this.x = x; this.y = y; this.vx = vx; this.vy = vy;
-                this.alpha = 1; this.color = color;
-                this.gravity = 0.04; this.friction = 0.97;
+            constructor(x, y, color, type) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.type = type; // 'heart' or 'flower'
+                this.size = Math.random() * 15 + 10;
+                this.speedX = (Math.random() - 0.5) * 8;
+                this.speedY = (Math.random() - 0.5) * 8;
+                this.gravity = 0.05;
+                this.opacity = 1;
             }
+
             draw() {
-                ctx.globalAlpha = this.alpha;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                const icon = this.type === 'heart' ? '❤️' : '🌸';
+                ctx.fillText(icon, this.x, this.y);
             }
+
             update() {
-                this.vx *= this.friction; this.vy *= this.friction;
-                this.vy += this.gravity;
-                this.x += this.vx; this.y += this.vy;
-                this.alpha -= 0.012;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += this.gravity;
+                this.opacity -= 0.01;
             }
         }
 
-        let particles =;
-        function spawnHeart(cx, cy) {
-            const hue = Math.random() * 20 + 340; // Nuances de rouge/rose
-            const color = `hsl(${hue}, 100%, 60%)`;
-            for (let i = 0; i < 120; i++) {
-                const t = (i / 120) * Math.PI * 2;
-                // Équations du coeur
-                const x = 16 * Math.pow(Math.sin(t), 3);
-                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                const speed = Math.random() * 1.5 + 2;
-                particles.push(new Particle(cx, cy, x * speed * 0.35, y * speed * 0.35, color));
+        function createExplosion(x, y) {
+            for (let i = 0; i < 15; i++) {
+                const type = Math.random() > 0.5 ? 'heart' : 'flower';
+                particles.push(new Particle(x, y, null, type));
             }
         }
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles = particles.filter(p => p.alpha > 0);
-            particles.forEach(p => { p.update(); p.draw(); });
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].opacity <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
             requestAnimationFrame(animate);
         }
 
-        function startFireworkShow() {
+        function startFireworks() {
             animate();
             setInterval(() => {
-                const rx = Math.random() * canvas.width;
-                const ry = Math.random() * (canvas.height * 0.6);
-                spawnHeart(rx, ry);
-            }, 600);
+                createExplosion(Math.random() * canvas.width, Math.random() * canvas.height);
+            }, 500);
         }
 
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
+
     </script>
 </body>
 </html>
