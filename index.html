@@ -1,1 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joyeux Anniversaire Hermine ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose:    #F472B6;
+    --rose-deep: #DB2777;
+    --gold:    #FBBF24;
+    --gold-light: #FDE68A;
+    --lavender:#C084FC;
+    --cream:   #FFF7ED;
+    --dark:    #1a0a2e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── custom cursor ── */
+  .cursor {
+    position: fixed; top: 0; left: 0;
+    width: 18px; height: 18px;
+    background: var(--rose);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform .15s ease, background .3s;
+    mix-blend-mode: screen;
+  }
+
+  /* ── canvas background ── */
+  #bg { position: fixed; inset: 0; z-index: 0; }
+
+  /* ── main wrapper ── */
+  .scene {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 60px 20px 80px;
+    gap: 0;
+  }
+
+  /* ── floating petals (CSS) ── */
+  .petal-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+  .petal {
+    position: absolute;
+    top: -40px;
+    font-size: 1.4rem;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg) scale(.8);  opacity: .9; }
+    80%  { opacity: .7; }
+    100% { transform: translateY(110vh) rotate(720deg) scale(1.1); opacity: 0; }
+  }
+
+  /* ── crown / top ornament ── */
+  .crown { font-size: 3.5rem; animation: float 3s ease-in-out infinite; margin-bottom: 8px; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+  }
+
+  /* ── name section ── */
+  .name-block {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: var(--gold-light);
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp .9s .2s forwards;
+  }
+  .name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(2.2rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    background: linear-gradient(135deg, var(--gold-light), var(--rose), var(--lavender), var(--gold));
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradShift 4s ease infinite, fadeUp .9s .4s both;
+    margin: 12px 0 6px;
+  }
+  @keyframes gradShift {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .name-line2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: clamp(1.2rem, 3.5vw, 2.6rem);
+    color: var(--rose);
+    letter-spacing: .08em;
+    opacity: 0;
+    animation: fadeUp .9s .6s forwards;
+  }
+
+  /* ── big wishes card ── */
+  .card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(251,191,36,.25);
+    border-radius: 32px;
+    padding: clamp(28px,5vw,56px) clamp(24px,6vw,72px);
+    max-width: 760px;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 80px rgba(244,114,182,.12), inset 0 0 40px rgba(251,191,36,.04);
+    opacity: 0;
+    animation: fadeUp .9s .8s forwards;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(244,114,182,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .wish-main {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-shadow: 0 0 40px rgba(244,114,182,.6);
+  }
+  .wish-main span {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .wish-text {
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    color: rgba(255,255,255,.75);
+    line-height: 1.8;
+    font-weight: 300;
+    font-style: italic;
+    max-width: 580px;
+    margin: 0 auto 24px;
+  }
+  .emoji-row {
+    font-size: 2rem;
+    letter-spacing: .3em;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+  /* ── divider ── */
+  .divider {
+    width: 180px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 36px auto;
+    opacity: 0;
+    animation: fadeIn 1s 1.3s forwards;
+  }
+
+  /* ── message section ── */
+  .message-block {
+    max-width: 640px;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp .9s 1.4s forwards;
+  }
+  .message-block p {
+    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+    color: rgba(255,255,255,.7);
+    line-height: 1.9;
+    font-style: italic;
+    font-weight: 300;
+  }
+  .message-block p strong {
+    color: var(--rose);
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  /* ── candles row ── */
+  .candles {
+    display: flex; gap: 18px; align-items: flex-end;
+    margin-top: 44px;
+    opacity: 0;
+    animation: fadeUp .9s 1.7s forwards;
+  }
+  .candle { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .flame {
+    width: 16px; height: 24px;
+    background: radial-gradient(ellipse at 50% 100%, var(--gold), var(--rose) 60%, transparent 100%);
+    border-radius: 50% 50% 30% 30%;
+    animation: flicker 1.2s ease-in-out infinite alternate;
+    filter: blur(.5px);
+  }
+  .candle:nth-child(2) .flame { animation-delay: .3s; }
+  .candle:nth-child(3) .flame { animation-delay: .6s; }
+  .candle:nth-child(4) .flame { animation-delay: .1s; }
+  .candle:nth-child(5) .flame { animation-delay: .8s; }
+  @keyframes flicker {
+    0%   { transform: scaleX(1)   scaleY(1)   rotate(-3deg); opacity: 1; }
+    100% { transform: scaleX(.85) scaleY(1.1) rotate( 3deg); opacity: .8; }
+  }
+  .stick {
+    width: 12px;
+    border-radius: 4px 4px 2px 2px;
+    background: linear-gradient(180deg, #fff9e6, #f0d080);
+  }
+  .stick.s1 { height: 55px; } .stick.s2 { height: 70px; } .stick.s3 { height: 85px; }
+  .stick.s4 { height: 70px; } .stick.s5 { height: 55px; }
+  .wick { width: 2px; height: 6px; background: #555; border-radius: 2px; }
+
+  /* ── signature ── */
+  .signature {
+    margin-top: 52px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,.4);
+    letter-spacing: .1em;
+    opacity: 0;
+    animation: fadeIn 1s 2.2s forwards;
+  }
+
+  /* ── util animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ── sparkle overlay ── */
+  .sparkle { position: fixed; pointer-events: none; z-index: 10; font-size: 1.2rem;
+    animation: sparkleAnim .8s forwards ease-out; }
+  @keyframes sparkleAnim {
+    0%   { opacity: 1; transform: scale(0) rotate(0deg); }
+    50%  { opacity: 1; transform: scale(1.4) rotate(180deg); }
+    100% { opacity: 0; transform: scale(.5) rotate(360deg) translateY(-40px); }
+  }
+
+  @media (max-width: 500px) {
+    .name { letter-spacing: -.01em; }
+    .candles { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<canvas id="bg"></canvas>
+
+<!-- floating petals -->
+<div class="petal-wrap" id="petals"></div>
+
+<main class="scene">
+  <div class="crown">👑</div>
+
+  <div class="name-block">
+    <p class="subtitle">✦ Joyeux Anniversaire ✦</p>
+    <h1 class="name">Hermine Marie<br>Corinne</h1>
+    <p class="name-line2">Ouedraogo Kiswendsida</p>
+  </div>
+
+  <div class="card">
+    <p class="wish-main">Bonne <span>Fête</span> à toi !</p>
+    <p class="wish-text">
+      Que cette journée soit aussi lumineuse, douce et précieuse que tu l'es.
+      Que chaque bougie allumée porte un vœu qui se réalise,
+      et que cette nouvelle année t'apporte joie, santé et tout l'amour que tu mérites.
+    </p>
+    <div class="emoji-row">🎂 🌸 🎉 💖 🌟</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="message-block">
+    <p>
+      La vie t'a choisie <strong>unique</strong>, lumineuse, et extraordinaire.
+      Aujourd'hui, c'est ton jour — laisse-toi envelopper de bonheur,
+      de rires et de <strong>moments inoubliables</strong> partagés avec ceux qui t'aiment.
+      <br><br>
+      Tu es une <strong>bénédiction</strong> pour ceux qui ont la chance de te connaître. 🌺
+    </p>
+  </div>
+
+  <div class="candles">
+    <div class="candle"><div class="flame"></div><div class="wick"></div><div class="stick s1"></div></div>
+    <div class="candle"><div class="flame"></div><div class="wick"></div><div class="stick s2"></div></div>
+    <div class="candle"><div class="flame"></div><div class="wick"></div><div class="stick s3"></div></div>
+    <div class="candle"><div class="flame"></div><div class="wick"></div><div class="stick s4"></div></div>
+    <div class="candle"><div class="flame"></div><div class="wick"></div><div class="stick s5"></div></div>
+  </div>
+
+  <p class="signature">avec tout l'amour du monde 💕</p>
+</main>
+
+<script>
+/* ── canvas starfield + aurora ── */
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [], time = 0;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function makeStars(n) {
+  stars = [];
+  for (let i = 0; i < n; i++) {
+    stars.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.4 + .3,
+      a: Math.random(),
+      speed: Math.random() * .008 + .002,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+makeStars(220);
+
+function drawAurora(t) {
+  const grad = ctx.createRadialGradient(W*.5, H*.3, 0, W*.5, H*.3, W*.7);
+  grad.addColorStop(0,   `hsla(${290 + Math.sin(t*.3)*20}, 70%, 30%, .18)`);
+  grad.addColorStop(.5,  `hsla(${330 + Math.sin(t*.2)*15}, 60%, 35%, .10)`);
+  grad.addColorStop(1,   'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  const g2 = ctx.createRadialGradient(W*.2, H*.7, 0, W*.2, H*.7, W*.5);
+  g2.addColorStop(0,  `hsla(${260+Math.sin(t*.25)*20}, 60%, 28%, .12)`);
+  g2.addColorStop(1,  'transparent');
+  ctx.fillStyle = g2;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function loop() {
+  time += .016;
+  ctx.clearRect(0, 0, W, H);
+
+  // deep background
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0d0520');
+  bg.addColorStop(1, '#1a0a2e');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  drawAurora(time);
+
+  // stars
+  for (const s of stars) {
+    const alpha = (.4 + .6 * Math.sin(s.phase + time * s.speed * 60)) * s.a;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fill();
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ── floating petals ── */
+const PETALS = ['🌸','🌺','🌷','✨','💫','⭐','🌟','💖','🎀'];
+const wrap = document.getElementById('petals');
+function makePetal() {
+  const el = document.createElement('div');
+  el.className = 'petal';
+  el.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+  el.style.left   = Math.random() * 100 + 'vw';
+  el.style.fontSize = (.8 + Math.random() * 1.4) + 'rem';
+  const dur = 5 + Math.random() * 8;
+  el.style.animationDuration  = dur + 's';
+  el.style.animationDelay     = (Math.random() * 6) + 's';
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), (dur + 6) * 1000);
+}
+setInterval(makePetal, 400);
+for (let i = 0; i < 16; i++) makePetal();
+
+/* ── custom cursor ── */
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+
+/* ── click sparkles ── */
+const SPARKS = ['✨','💖','⭐','🌸','💫','🎉','🌟'];
+document.addEventListener('click', e => {
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = SPARKS[Math.floor(Math.random() * SPARKS.length)];
+    s.style.left = (e.clientX + (Math.random()-0.5)*60) + 'px';
+    s.style.top  = (e.clientY + (Math.random()-0.5)*60) + 'px';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 850);
+  }
+});
+</script>
+</body>
+</html>
 
